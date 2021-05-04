@@ -10,7 +10,10 @@ import CalendarViewDayIcon from "@material-ui/icons/CalendarViewDay";
 import Post from "./Post";
 import { db } from "./firebase";
 import firebase from "firebase";
+import { useSelector } from "react-redux";
+import { selectUser } from "./features/userSlice";
 function Feed() {
+  const user = useSelector(selectUser);
   const [input, setInput] = useState("");
   const [posts, setPosts] = useState([]);
 
@@ -31,10 +34,10 @@ function Feed() {
     //stops page from refreshing when pressed submit
     e.preventDefault();
     db.collection("posts").add({
-      name: "Enzo Ferrari",
-      description: "Founder of Ferrari",
+      name: user.displayName,
+      description: user.email,
       message: input,
-      photoURL: "",
+      photoURL: user.photoURL || "",
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
     });
 
@@ -46,7 +49,7 @@ function Feed() {
       <div className="feed__inputContainer">
         <div className="feed__input">
           <div className="feed__avatar">
-            <Avatar />
+            <Avatar src={user.photoURL}>{user?.displayName[0]}</Avatar>
           </div>
           <form>
             <input
@@ -86,16 +89,6 @@ function Feed() {
           photoURL={photoURL}
         />
       ))}
-      <Post
-        name="Satya Nadella"
-        description="CEO at Microsoft"
-        message="Hello world"
-      />
-      <Post
-        name="Jack Dorsey"
-        description="CEO at Twitter"
-        message="I love twitter"
-      />
     </div>
   );
 }
